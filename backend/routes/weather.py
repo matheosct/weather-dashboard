@@ -6,12 +6,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 weather_router = APIRouter(prefix="/weather", tags=["weather"])
-weather_service = WeatherService()
+
+def get_weather_service():
+    return WeatherService()
 
 @weather_router.get("/current")
 async def get_current_weather(city: str = Query(..., description="City name")):
     """Get current weather for a city"""
     try:
+        weather_service = get_weather_service()
         weather_data = await weather_service.get_current_weather(city)
         
         if not weather_data:
@@ -29,6 +32,7 @@ async def get_current_weather(city: str = Query(..., description="City name")):
 async def get_forecast(city: str = Query(..., description="City name")):
     """Get 5-day weather forecast for a city"""
     try:
+        weather_service = get_weather_service()
         forecast_data = await weather_service.get_forecast(city)
         
         if not forecast_data:
@@ -49,6 +53,7 @@ async def get_weather_by_coords(
 ):
     """Get current weather by coordinates"""
     try:
+        weather_service = get_weather_service()
         weather_data = await weather_service.get_weather_by_coords(lat, lon)
         
         if not weather_data:
