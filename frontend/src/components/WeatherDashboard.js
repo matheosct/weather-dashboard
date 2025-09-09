@@ -68,22 +68,20 @@ const WeatherDashboard = () => {
     setError('');
     
     try {
-      // Mock API call for now
-      setTimeout(() => {
-        const mockData = mockWeatherData.getCurrentWeather(city);
-        const mockForecast = mockWeatherData.getForecast(city);
-        
-        if (mockData) {
-          setWeatherData(mockData);
-          setForecastData(mockForecast);
-          setLastCity(city);
-        } else {
-          setError('City not found');
-        }
-        setLoading(false);
-      }, 800);
+      const weatherData = await weatherApi.getCurrentWeather(city);
+      const forecastData = await weatherApi.getForecast(city);
+      
+      setWeatherData(weatherData);
+      setForecastData(forecastData);
+      setLastCity(city);
+      setLoading(false);
     } catch (err) {
-      setError('Failed to fetch weather data');
+      console.error('Error fetching weather:', err);
+      if (err.message.includes('404') || err.message.includes('City not found')) {
+        setError('City not found');
+      } else {
+        setError('Failed to fetch weather data');
+      }
       setLoading(false);
     }
   };
