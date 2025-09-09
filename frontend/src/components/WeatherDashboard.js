@@ -28,15 +28,33 @@ const WeatherDashboard = () => {
   const detectLocation = async () => {
     setLoading(true);
     try {
-      // Mock geolocation for now
-      setTimeout(() => {
-        const mockData = mockWeatherData.getCurrentWeather('São Paulo');
-        const mockForecast = mockWeatherData.getForecast('São Paulo');
-        setWeatherData(mockData);
-        setForecastData(mockForecast);
-        setLastCity('São Paulo');
-        setLoading(false);
-      }, 1000);
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+              const weatherData = await weatherApi.getWeatherByCoords(latitude, longitude);
+              const forecastData = await weatherApi.getForecast(weatherData.city);
+              setWeatherData(weatherData);
+              setForecastData(forecastData);
+              setLastCity(weatherData.city);
+              setLoading(false);
+            } catch (err) {
+              console.error('Error fetching weather by coords:', err);
+              // Fallback to default city
+              handleSearch('London');
+            }
+          },
+          (error) => {
+            console.error('Geolocation error:', error);
+            // Fallback to default city
+            handleSearch('London');
+          }
+        );
+      } else {
+        // Geolocation not supported, fallback to default city
+        handleSearch('London');
+      }
     } catch (err) {
       setError('Unable to detect location');
       setLoading(false);
