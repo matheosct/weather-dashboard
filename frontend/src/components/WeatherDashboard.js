@@ -4,7 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import SearchBar from './SearchBar';
 import CurrentWeather from './CurrentWeather';
 import Forecast from './Forecast';
-import { mockWeatherData } from '../services/mockData';
+import { weatherApi } from '../services/weatherApi';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const WeatherDashboard = () => {
